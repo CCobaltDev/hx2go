@@ -30,6 +30,7 @@ class Test {
         Sys.println(obj.y);
         Sys.println(obj.y.foo);
         Sys.println(obj.y.bar);
+        Sys.println(obj.y.foo + obj.y.bar + cls.waa);
     }
 
 }
