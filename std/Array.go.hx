@@ -78,13 +78,11 @@ extern class Array<T> {
     function resize(len:Int):Void;
 
     @:runtime inline extern function iterator():haxe.iterators.ArrayIterator<T> { // TODO: remove "extern" when supported
-        // return new haxe.iterators.ArrayIterator(this);
-        return null;
+        return new haxe.iterators.ArrayIterator(this);
     }
 
     @:pure @:runtime public inline extern function keyValueIterator() : ArrayKeyValueIterator<T> { // TODO: remove "extern" when supported
-        // return new ArrayKeyValueIterator(this);
-        return null;
+        return new ArrayKeyValueIterator(this);
     }
 
     @:runtime inline extern function map<S>(f:T->S):Array<S> { // TODO: remove "extern" when supported
