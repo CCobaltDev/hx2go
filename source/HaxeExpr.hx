@@ -273,6 +273,7 @@ enum HaxeTypeDefinitionKind {
 	TDClass;
 	TDAbstract;
 	TDFields;
+	TDType(ct:ComplexType);
 }
 
 @:structInit
