@@ -569,12 +569,8 @@ class ExprParser {
             default:
         }
 
-        for (t in typeMapping.keyValueIterator()) {
-            // mikaib: this *can* technically break in *very* rare cases, I doubt it will be an issue but we might something better in the future.
-            defTypeString = defTypeString.replace(t.key, t.value);
-        }
 
-        return new Object(defString, defTypeString, lineIndex, startIndex, subTypeString, objectString, debug_path);
+        return new Object(defString, RecordTools.remapType(defTypeString, typeMapping), lineIndex, startIndex, subTypeString, objectString, debug_path);
     }
 
     function stringToUnop(un: String):Unop {

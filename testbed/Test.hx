@@ -1,131 +1,161 @@
-class Instance {
+import go.Fmt;
 
-    public var x: Float;
+import runtime.HxClass;
+import haxe.iterators.ArrayIterator;
+
+class Vehicle {
 
     public function new() {
-        x = 4.0;
+        Sys.println("Vehicle created");
     }
 
-    public function inc(by: Float) {
-        x += by;
+    public function start(): Void {
+        Sys.println("Vehicle started");
     }
+
+    public function horsepower(): Int {
+        return 100;
+    }
+
+}
+
+class Car extends Vehicle {
+
+    override public function start(): Void {
+        Sys.println("Car started");
+    }
+
+    public function startVehicle(): Void {
+        super.start();
+    }
+
+    public function honk(): Void {
+        Sys.println("Car honked");
+    }
+
+}
+
+class Truck extends Car {
+
+    override public function start(): Void {
+        Sys.println("Truck started");
+    }
+
+    override public function honk(): Void {
+        Sys.println("Truck honked loudly");
+    }
+
+}
+
+class Greeter {
+    public var firstName = "First";
+    public var lastName = "Second";
+
+    public function new(firstName: String) {
+        this.firstName = firstName;
+    }
+
+    public function getFullName(): String {
+        return firstName + " " + lastName;
+    }
+
+    public function greet(): Void {
+        Sys.println("Hello, " + getFullName());
+    }
+}
+
+class LastNameGreeter extends Greeter {
+
+    public function new(firstName: String, lastName: String) {
+        super(firstName);
+        this.lastName = lastName;
+    }
+
+}
+
+class Ref<T> {
+
+    public var value: T;
+
+    public function new(_value: T) {
+        set(_value);
+    }
+
+    public function set(_value: T) {
+        value = _value;
+    }
+
+    public function get(): T {
+        return value;
+    }
+
 }
 
 @:analyzer(ignore)
 class Test {
-    static function cap():{incV:Float->Void, incI: Int->Float, incF: Float->Float, print:Void->Void} {
-        var x = 5.0;
 
-        var inc = (by: Float) -> {
-            x += by;
+    public static function main() {
+        var truck: Truck = new Truck();
+        var vehicle: Vehicle = truck;
+        Sys.println(vehicle.horsepower());
+
+        vehicle.start();
+        truck.startVehicle();
+
+        Sys.println(truck.horsepower());
+        truck.honk();
+
+        var arr = [1, 2, 3];
+        var str = ["a", "b", "c"];
+        var arr_iter = new ArrayIterator(arr);
+        var str_iter = new ArrayIterator(str);
+
+        for (x in arr_iter) {
+            Sys.println('iter: ' + Std.string(x));
         }
-        var print = () -> {
-            Sys.println(x);
+
+        for (x in str_iter) {
+            Sys.println('iter: ' + Std.string(x));
         }
 
-//        function inc() {
-//            return x++;
-//        }
-//
-//        function print() {
-//            Sys.println(x);
-//        }
+        var x: Ref<Int> = new Ref(3);
+        Sys.println(x.get());
+        x.set(5);
+        Sys.println(x.get());
+        x.set(10);
 
-        return {incV: inc, incI: inc, incF: inc, print: print};
+        var y: Ref<Ref<Int>> = new Ref(x);
+        Sys.println(y.get());
+        Sys.println(y.get().get());
+
+        var refa: Ref<Truck> = new Ref(truck);
+        var refb: Ref<Ref<Truck>> = new Ref(refa);
+        refa.get().honk();
+
+        var v: Vehicle = refb.get().get();
+        v.start();
+
+        var cls = HxClass.findClass("Truck");
+        Sys.println(cls);
+        Sys.println(cls.superClass);
+        Sys.println(cls.superClass.superClass);
+        Sys.println(cls.superClass.superClass.superClass); // should be null
+
+        Sys.println("class list:");
+        for (c in HxClass.getAllClasses()) {
+            Sys.println("  " + c);
+        }
+
+        var greet0 = new Greeter("Elise");
+        greet0.greet();
+
+        var greet1 = new LastNameGreeter("Bob", "Third");
+        greet1.greet();
+
+//        var buf = new StringBuf();
+//        buf.add("Hello, ");
+//        buf.add("World!");
+//        Sys.println(buf.toString());
     }
 
-    static function test() {
-        return { a: 3 };
-    }
-
-    static function foo(x: Int): { double: Int, half: Float } {
-        return {
-            double: x * 2,
-            half: x / 2
-        }
-    }
-
-    static function main() {
-        var a = cap();
-        var b = cap();
-        var c = test();
-
-        Sys.println(c.a);
-        a.print();
-        b.print();
-
-        a.incI(1);
-
-        a.print();
-        b.print();
-
-        b.incF(1);
-
-        a.print();
-        b.print();
-
-        var count = 100;
-        var foo = (a, b) -> a + b;
-        var bar = foo.bind(count, _);
-
-        Sys.println(bar(100));
-        count = 200;
-        Sys.println(bar(100)); // should still be 200, not 300
-
-        var dyn = Test.foo;
-        var dyn_res = dyn(5);
-        Sys.println(dyn_res.double);
-        Sys.println(dyn_res.half);
-        Sys.println(Test.foo(5));
-        Test.foo(5);
-
-        var dyn_bound = Test.foo.bind(10);
-        var dyn_bound_res = dyn_bound();
-        Sys.println(dyn_bound_res.double);
-        Sys.println(dyn_bound_res.half);
-        Sys.println(Test.foo.bind(10)());
-        Test.foo.bind(10)();
-
-        var f: Array<Void->Void> = [];
-
-        for (i in 0...3) {
-            f.push(() -> Sys.println(i));
-        }
-
-        for (fn in f) {
-            fn();
-        }
-
-        var instanceA = new Instance();
-        var instanceB = new Instance();
-
-        instanceA.inc(1);
-        instanceB.inc(1);
-
-        var dyn_inst_a = instanceA.inc;
-        var dyn_inst_b = instanceB.inc;
-        instanceB = instanceA;
-
-        Sys.println(instanceA.x);
-        Sys.println(instanceB.x);
-
-        dyn_inst_a(1);
-
-        Sys.println(instanceA.x);
-        Sys.println(instanceB.x);
-
-        dyn_inst_b(1);
-
-        Sys.println(instanceA.x);
-        Sys.println(instanceB.x);
-
-        var dyn_inst_a_one = instanceA.inc.bind(1);
-        var dyn_inst_b_one = instanceB.inc.bind(1);
-
-//        dyn_inst_a_one();
-//        dyn_inst_b_one();
-//
-//        Sys.println(instanceA.x);
-//        Sys.println(instanceB.x);
-    }
 }

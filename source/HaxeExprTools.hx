@@ -80,8 +80,8 @@ class HaxeExprTools {
 			}
 			return expr;
 		} catch (e:Dynamic) {
-			Logging.exprTools.error("HaxeExprTools.stringToExprDef parse error!");
-			return EMeta({ pos: null, name: "PARSE_ERROR" }, null);
+			Logging.exprTools.error("HaxeExprTools.stringToExprDef parse error!, e: " + Std.string(e) + " s: " + s);
+			return EMeta({ pos: null, name: "ParseError" }, null);
 		}
     }
     public static function stringToComplexType(s:String):ComplexType {
@@ -97,7 +97,9 @@ class HaxeExprTools {
             case EParenthesis({pos: _, expr: ECheckType(_, t)}):
                 t;
             default:
-                throw "invalid expr: " + expr;
+				Logging.exprTools.error("HaxeExprTools.stringToComplexType parse error! s: " + s + " expr: " + expr);
+				HaxeExprTools.stringToComplexType("ParsingError");
+                // throw "invalid expr: " + expr + " in s: " + s;
         }
         return t;
     }
