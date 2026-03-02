@@ -394,6 +394,10 @@ class Preprocessor {
 
                 switch field.expr.def {
                     case EFunction(_, f):
+                        for (arg in f.args) {
+                            scope.defineVariable(arg.name, this);
+                        }
+
                         processExpr(f.expr, scope);
                     default:
                         processExpr(field.expr, scope);
