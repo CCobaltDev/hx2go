@@ -44,12 +44,6 @@ function transformNew(t:Transformer, e:HaxeExpr, tpath: TypePath, params: Array<
         }
     }
 
-    for (field in td.fields) {
-        if (field.name == 'new') {
-            trace('new field: ${field.name}, expr: ${field.expr}');
-        }
-    }
-
     if (isNative && structInit) {
         if (td.constructor == null) {
             Logging.transformer.error('td.constructor may not be null');
