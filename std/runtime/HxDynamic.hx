@@ -379,7 +379,7 @@ class HxDynamic {
 		return valueToFloat(dV);
 	}
 
-	public static function field(d: Dynamic, fieldName: String): Dynamic {
+	private static function field(d: Dynamic, fieldName: String): Value {
 		var value = Reflect.valueOf(d);
 		var kind = value.kind();
 
@@ -392,34 +392,39 @@ class HxDynamic {
 		}
 
 		if (kind == Reflect.Struct) {
-			var f = value.fieldByName(formatField(fieldName));
-			if (!f.isValid()) {
-				return null;
-			}
-
-			if (!f.canInterface()) {
-				throw "runtime.HxDynamic.field private field access: " + fieldName + " on " + value;
-			}
-
-			return f.iface();
+			return value.fieldByName(formatField(fieldName));
 		}
 
 		if (kind == Reflect.Map) {
-			var key = Reflect.valueOf(fieldName);
-			var f = value.mapIndex(key);
-
-			if (!f.isValid()) {
-				return null;
-			}
-
-			if (!f.canInterface()) {
-				throw "runtime.HxDynamic.field private field access: " + fieldName + " on " + value;
-			}
-
-			return f.iface();
+			return value.mapIndex(
+				Reflect.valueOf(fieldName)
+			);
 		}
 
-		throw "runtime.HxDynamic.field unsupported field access on " + kind;
+		// throw "runtime.HxDynamic.field unsupported field access on " + kind;
+
+		return Reflect.valueOf(null);
+	}
+
+	public static function getField(dyn: Dynamic, fieldName: String): Dynamic {
+		var f = field(dyn, fieldName);
+		if (!f.isValid()) {
+			return null;
+		}
+
+		if (!f.canInterface()) {
+			throw "runtime.HxDynamic.field private field access: " + f;
+		}
+
+		return f.iface();
+	}
+
+	public static function setField(dyn: Dynamic, fieldName: String): Void {
+		var f = field(dyn, fieldName);
+
+		f.set(
+			Reflect.valueOf(dyn)
+		);
 	}
 
 }

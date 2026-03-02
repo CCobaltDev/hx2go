@@ -232,12 +232,20 @@ function handleFieldTransform(t:Transformer, e:HaxeExpr, ct:ComplexType, e2:Haxe
         case TPath({ name: "Array", pack: [] }) if (field == "length"):
             e.def = EGoCode('len(*{0})', [e2]);
             true;
+
         case TPath({ name: 'String', pack: [] }) if (field == "length"):
             e.def = EGoCode('utf8.RuneCountInString({0})', [e2]);
             t.def.addGoImport('unicode/utf8');
             true;
+
         case TPath({ name: 'Dynamic', pack: [] }):
-            e.def = ECall({
+            var op = switch e.parent?.def {
+                case EBinop(OpAssign, inner, _) if (inner == e): { name: 'setField', on: e.parent };
+                case EBinop(OpAssignOp(_), _, _): Logging.transformer.error('OpAssignOp dynamic set'); null;
+                case _: { name: 'getField', on: e };
+            }
+
+            op.on.def = ECall({
                 t: null,
                 def: EField({
                     t: null,
@@ -245,10 +253,14 @@ function handleFieldTransform(t:Transformer, e:HaxeExpr, ct:ComplexType, e2:Haxe
                         t: null,
                         def: EConst(CIdent("runtime"))
                     }, "HxDynamic")
-                }, "field"),
-                special: FStatic("runtime.HxDynamic", "field")
-            }, [e2, { t: null, def: EConst(CString(field)) }]);
-            t.transformExpr(e);
+                }, op.name),
+                special: FStatic("runtime.HxDynamic", op.name)
+            }, [e2, {
+                t: null,
+                def: EConst(CString(field))
+            }]);
+
+            t.transformExpr(op.on);
             true;
 
         case TAnonymous(fields):
