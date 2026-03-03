@@ -420,8 +420,6 @@ class HxDynamic {
 			kind = value.kind();
 		}
 
-		Sys.println('set $fieldName on $dyn to $v (kind: ${value.kind()})');
-
 		if (kind == Reflect.Struct) {
 			var field = value.fieldByName(formatField(fieldName));
 
