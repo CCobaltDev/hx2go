@@ -240,10 +240,15 @@ function handleFieldTransform(t:Transformer, e:HaxeExpr, ct:ComplexType, e2:Haxe
 
         case TPath({ name: 'Dynamic', pack: [] }):
             var op = switch e.parent?.def {
-                case EBinop(OpAssign, inner, _) if (inner == e): { name: 'setField', on: e.parent };
+                case EBinop(OpAssign, inner, right) if (inner == e): { name: 'setField', on: e.parent, right: right };
                 case EBinop(OpAssignOp(_), _, _): Logging.transformer.error('OpAssignOp dynamic set'); null;
-                case _: { name: 'getField', on: e };
+                case _: { name: 'getField', on: e, right: null };
             }
+
+            var field: HaxeExpr = {
+                t: null,
+                def: EConst(CString(field))
+            };
 
             op.on.def = ECall({
                 t: null,
@@ -255,10 +260,7 @@ function handleFieldTransform(t:Transformer, e:HaxeExpr, ct:ComplexType, e2:Haxe
                     }, "HxDynamic")
                 }, op.name),
                 special: FStatic("runtime.HxDynamic", op.name)
-            }, [e2, {
-                t: null,
-                def: EConst(CString(field))
-            }]);
+            }, op.right != null ? [e2, field, op.right] : [e2, field]);
 
             t.transformExpr(op.on);
             true;
