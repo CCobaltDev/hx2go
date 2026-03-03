@@ -1,5 +1,3 @@
-import runtime.HxDynamic;
-
 class Wee {
 
     public var waa: Float;
