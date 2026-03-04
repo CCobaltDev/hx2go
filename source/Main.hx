@@ -8,7 +8,9 @@ class Main {
       Logging.init();
 
       final context:Context = {options: loadContextOptions()};
-      if (context.run() == null)
+      final results = context.run();
+      trace(results);
+      if (results == null)
          Sys.exit(1);
    }
 
