@@ -4,4 +4,5 @@ function main() {
     Sys.println(x.indexOf("o"));
     Sys.println(x.split(""));
     Sys.println(String.fromCharCode(42));
+    Sys.println(new String("hi"));
 }
