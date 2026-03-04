@@ -56,14 +56,14 @@ extern class String {
         return Strings.split(this, delimiter);
     }
     inline function substr(pos:Int, ?len:Int):String {
-        var startIndex = if (pos > 0) {
+        var startIndex = if (pos < 0) {
             // If pos is negative, its value is calculated from the end of this String by this.length + pos. 
             this.length + pos;
         }else{
             pos;
         }
         // If this yields a negative value, 0 is used instead.
-        if (startIndex > 0)
+        if (startIndex < 0)
             startIndex = 0;
         var end = if (len != null) {
             startIndex + len;
