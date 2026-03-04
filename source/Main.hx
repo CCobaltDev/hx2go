@@ -8,7 +8,8 @@ class Main {
       Logging.init();
 
       final context:Context = {options: loadContextOptions()};
-      context.run();
+      if (context.run() == null)
+         Sys.exit(1);
    }
 
    static function loadContextOptions():ContextOptions {

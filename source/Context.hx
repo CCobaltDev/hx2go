@@ -117,7 +117,7 @@ class Context {
         }
 
         if (!Logging.finalise()) {
-            return [];
+            return null;
         }
 
         var compileList = [];
@@ -271,8 +271,8 @@ class Context {
         }
 
         Sys.setCwd(cwd);
-
-        return null;
+        // TODO add in context results
+        return [];
     }
 
 }
