@@ -453,6 +453,43 @@ class HxDynamic {
 		// TODO: throw when Null<T> is supported.
 	}
 
+	public static function setArrayIndex(dyn: Dynamic, index: Int, v: Dynamic): Void {
+		var value = ensureValue(dyn);
+		var kind = value.kind();
+
+		if (isNull(value)) {
+			throw "runtime.HxDynamic.field null array access";
+		}
+
+		if (kind == Reflect.Interface) {
+			value = getArrayIndex(value.elem(), index);
+		}
+
+		if (kind == Reflect.Ptr) {
+			value = value.elem();
+			kind = value.kind();
+		}
+
+		if (kind == Reflect.Slice || kind == Reflect.Array) {
+			var length = value.len();
+			if (index >= length) {
+				if (kind == Reflect.Array) {
+					throw "runtime.HxDynamic.field out of bounds exception, cannot grow go array";
+				}
+
+				value.grow(index - length + 1);
+				value.setLen(index + 1);
+			}
+
+			var item = value.index(index);
+			item.set(
+				ensureValue(v)
+			);
+		}
+
+		// TODO: throw when Null<T> is supported.
+	}
+
 	public static function getArrayIndex(dyn: Dynamic, index: Int): Dynamic {
 		var value = ensureValue(dyn);
 		var kind = value.kind();
