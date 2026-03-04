@@ -2,14 +2,10 @@ import go.strings.Strings;
 import go.Syntax;
 
 @:coreType
-@:keep
 extern class String {
-
-    // TODO: this extern is incomplete - https://api.haxe.org/String.html
-
     var length(default, null):Int;
 
-    function new(): Void;
+    function new(string:String): Void;
 
     inline function toUpperCase():String {
         return Strings.toUpper(this);
