@@ -32,6 +32,20 @@ class Transformer {
         p.params.resize(1);
     }
 
+    public function createCallStatic(path: String, funcName: String, params: Array<HaxeExpr>, returnType: String = "Dynamic"): HaxeExprDef {
+        var parts = path.split('.');
+        var e: HaxeExprDef = EConst(CIdent(parts[0]));
+        for (i in 1...parts.length) {
+            e = EField({ t: null, def: e }, parts[i]);
+        }
+
+        return ECall({
+            t: returnType,
+            def: EField({ t: null, def: e }, funcName),
+            special: FStatic(path, funcName)
+        }, params);
+    }
+
     public function transformExpr(e:HaxeExpr, ?parent:HaxeExpr, ?parentIdx:Int) {
         if (e == null || e.def == null) {
             return;
