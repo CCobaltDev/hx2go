@@ -86,6 +86,11 @@ function transformCast(t:Transformer, e:HaxeExpr, inner: HaxeExpr, type:ComplexT
             return;
         }
 
+        case [TPath({ name: "Dynamic", pack: [] }), _] if (t.module.path != "runtime.HxDynamic"): // miakib: ugly hack
+            inner.def = t.createCallStatic("runtime.HxDynamic", "ensureInterface", [inner.copy()]);
+            inner.flags = 0;
+            t.transformExpr(inner);
+
         case _: null;
     }
 

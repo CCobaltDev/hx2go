@@ -458,7 +458,7 @@ class HxDynamic {
 		var kind = value.kind();
 
 		if (isNull(value)) {
-			throw "runtime.HxDynamic.field null array access";
+			throw "runtime.HxDynamic.setArrayIndex null array access";
 		}
 
 		if (kind == Reflect.Interface) {
@@ -474,7 +474,7 @@ class HxDynamic {
 			var length = value.len();
 			if (index >= length) {
 				if (kind == Reflect.Array) {
-					throw "runtime.HxDynamic.field out of bounds exception, cannot grow go array";
+					throw "runtime.HxDynamic.setArrayIndex out of bounds exception, cannot grow go array";
 				}
 
 				value.grow(index - length + 1);
@@ -495,7 +495,7 @@ class HxDynamic {
 		var kind = value.kind();
 
 		if (isNull(value)) {
-			throw "runtime.HxDynamic.field null array access";
+			throw "runtime.HxDynamic.getArrayIndex null array access";
 		}
 
 		if (kind == Reflect.Ptr || kind == Reflect.Interface) {
@@ -505,7 +505,7 @@ class HxDynamic {
 		if (kind == Reflect.Slice || kind == Reflect.Array) {
 			var length = value.len();
 			if (index >= length) {
-				throw "runtime.HxDynamic.field out of bounds exception";
+				throw "runtime.HxDynamic.getArrayIndex out of bounds exception";
 			}
 
 			value = value.index(index);
@@ -545,4 +545,19 @@ class HxDynamic {
 		return v;
 	}
 
+	public static function ensureInterface(dyn: Dynamic): Dynamic {
+		var ok: Bool = false;
+		var value: Value = Null;
+		Syntax.code("{0}, {1} = {2}.(reflect.Value)", value, ok, dyn);
+
+		if (!ok) {
+			return dyn;
+		}
+
+		if (!value.canInterface()) {
+			throw "runtime.HxDynamic.ensureInterface cannot convert to iface";
+		}
+
+		return value.iface();
+	}
 }
