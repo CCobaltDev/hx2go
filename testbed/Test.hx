@@ -1,10 +1,29 @@
-function main() {
-    var x:IntArray = [10];
-    get(x);
-}
+@:analyzer(ignore)
+class Test {
 
-function get(x:IntArray) {
-     Sys.println(x);
-}
+    static function main() {
+        var arr: Dynamic = [5, 10, 20];
 
-typedef IntArray = Array<Int>;
+        Sys.println(arr);
+        arr[2] = arr[0] * arr[1];
+        Sys.println(arr);
+        arr[10] = 100;
+        Sys.println(arr);
+
+        var obj: Dynamic = {
+            foo: {
+                bar: {
+                    array: arr
+                }
+            }
+        }
+
+        Sys.println(obj.foo.bar.array[10]);
+        obj.foo.bar.array[5] = 3;
+
+        var arr_typed: Array<Dynamic> = obj.foo.bar.array;
+        Sys.println(obj.foo.bar.array);
+        Sys.println(arr_typed);
+    }
+
+}

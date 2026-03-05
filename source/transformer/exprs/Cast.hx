@@ -86,6 +86,11 @@ function transformCast(t:Transformer, e:HaxeExpr, inner: HaxeExpr, type:ComplexT
             return;
         }
 
+        case [TPath({ name: "Dynamic", pack: [] }), to] if (!to.match(TPath({ name: "Value", pack: ["go", "reflect"] }))): // if we desire a value, we shouldn't ensure the interface
+            inner.def = t.createCallStatic("runtime.HxDynamic", "ensureInterface", [inner.copy()]);
+            inner.flags = 0;
+            t.transformExpr(inner);
+
         case _: null;
     }
 
