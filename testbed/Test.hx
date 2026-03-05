@@ -39,4 +39,4 @@ class Test {
         Sys.println(arr_typed);
     }
 
-}
+typedef IntArray = Array<Int>;
